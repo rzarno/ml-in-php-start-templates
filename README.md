@@ -18,7 +18,7 @@ It covers 4 use cases:
 ## 1. Regression
 
 setup containers:
-cd regression-python-service-docker &&  docker-compose -f docker-compose.yml up -d --build --force-recreate
+cd regression-python-service-docker &&  docker-compose -f docker-compose.yml up -d --build
 
 request API GET:
 http://127.0.0.1:1337/?data=[[22.0, 7.2500, 0, 1, 0, 3, 2.0]]
@@ -26,10 +26,10 @@ http://127.0.0.1:1337/?data=[[22.0, 7.2500, 0, 1, 0, 3, 2.0]]
 ## 2. Classification
 
 setup containers
-cd classify-python-service-docker &&  docker-compose -f docker-compose.yml up -d --build --force-recreate
+cd classify-python-service-docker &&  docker-compose -f docker-compose.yml up -d --build
 
 request API GET:
-http://127.0.0.1:1337/?data=[[22.0,%207.2500,%200,%201,%200,%203,%202.0]]
+http://127.0.0.1:1338/?data=[[90004,2011,124000,1198,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]]
 
 ## 3. Prognose
 
