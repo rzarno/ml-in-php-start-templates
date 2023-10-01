@@ -15,3 +15,5 @@ RUN pip install -r requirements.txt
 
 # copy project
 COPY . /usr/src/app/
+
+RUN ["python3", "./train.py"]

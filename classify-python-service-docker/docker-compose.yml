@@ -9,7 +9,7 @@ services:
     expose:
       - 5000
     env_file:
-      - ./.env.prod
+      - ./.env.dev
   nginx:
     build: ./services/nginx
     ports:
