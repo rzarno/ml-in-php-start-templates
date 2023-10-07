@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+const SCRIPTS_PATH = __DIR__ . '/../script';
+
+$script = $_SERVER['argv'][1] ?? null;
+$scripts = array_map(
+    fn(string $file) => basename($file, '.php'),
+    glob(SCRIPTS_PATH . '/*/*.php'),
+);
+if ($script) {
+    if (! in_array($script, $scripts)) {
+        printf("Invalid script: %s\n", $script);
+        $script = null;
+    }
+}
+
+if (! $script) {
+    printf("Usage: %s <script>\n", basename($_SERVER['argv'][0]));
+    echo implode("\n", array_map(
+            fn(string $file) => '  - ' . $file,
+            $scripts,
+        )) . "\n";
+    exit(1);
+}
+
+$scriptPath = glob(SCRIPTS_PATH . "/*/{$script}.php");
+chdir(str_replace("{$script}.php",'', $scriptPath[0]));
+include $scriptPath[0];
