@@ -6,7 +6,7 @@ use Imagick;
 use League\Pipeline\StageInterface;
 use service\ImageTransform;
 use service\LabelEncoder;
-use service\model\Payload;
+use service\model\CNNPayload;
 
 class DataImputer implements StageInterface
 {
@@ -64,8 +64,8 @@ class DataImputer implements StageInterface
     }
 
     /**
-     * @param Payload $payload
-     * @return Payload
+     * @param CNNPayload $payload
+     * @return CNNPayload
      */
     public function __invoke($payload)
     {
@@ -77,8 +77,8 @@ class DataImputer implements StageInterface
             $payload->getImputeIterations()
         );
         $payload->setImportedData(null)
-            ->setDataImg($sequenceImg)
-            ->setDataLabel($sequenceLabel);
+            ->setDataX($sequenceImg)
+            ->setDataY($sequenceLabel);
         return $payload;
     }
 }

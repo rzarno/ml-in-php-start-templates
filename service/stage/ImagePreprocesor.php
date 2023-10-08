@@ -5,7 +5,7 @@ namespace service\stage;
 use Interop\Polite\Math\Matrix\NDArray;
 use League\Pipeline\StageInterface;
 use Rindow\Math\Matrix\MatrixOperator;
-use service\model\Payload;
+use service\model\CNNPayload;
 
 class ImagePreprocesor implements StageInterface
 {
@@ -22,27 +22,27 @@ class ImagePreprocesor implements StageInterface
     }
 
     /**
-     * @param Payload $payload
-     * @return Payload
+     * @param CNNPayload $payload
+     * @return CNNPayload
      */
     public function __invoke($payload)
     {
         echo "formating train image ...\n";
-        $trainImg = $this->flattenAndNormalizeImage($payload->getTrainImg(), $payload->getConfigInputShape());
-        $trainLabel = $this->matrixOperator->la()->astype($payload->getTrainLabel(), NDArray::int32);
+        $trainImg = $this->flattenAndNormalizeImage($payload->getTrainX(), $payload->getConfigInputShape());
+        $trainLabel = $this->matrixOperator->la()->astype($payload->getTrainY(), NDArray::int32);
         echo "formating test image ...\n";
-        $testImg  = $this->flattenAndNormalizeImage($payload->getTestImg(), $payload->getConfigInputShape());
-        $testLabel = $this->matrixOperator->la()->astype($payload->getTestLabel(), NDArray::int32);
+        $testImg  = $this->flattenAndNormalizeImage($payload->getTestX(), $payload->getConfigInputShape());
+        $testLabel = $this->matrixOperator->la()->astype($payload->getTestY(), NDArray::int32);
 
         $payload
-            ->setTrainImg(null)
-            ->setTrainLabel(null)
-            ->setTestImg(null)
-            ->setTestLabel(null)
-            ->setNormalizedTrainImg($trainImg)
-            ->setNormalizedTrainLabel($trainLabel)
-            ->setNormalizedTestImg($testImg)
-            ->setNormalizedTestLabel($testLabel);
+            ->setTrainX(null)
+            ->setTrainY(null)
+            ->setTestX(null)
+            ->setTestY(null)
+            ->setNormalizedTrainX($trainImg)
+            ->setNormalizedTrainY($trainLabel)
+            ->setNormalizedTestX($testImg)
+            ->setNormalizedTestY($testLabel);
 
         return $payload;
     }

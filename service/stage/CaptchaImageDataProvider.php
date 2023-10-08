@@ -3,14 +3,14 @@
 namespace service\stage;
 
 use League\Pipeline\StageInterface;
-use service\model\Payload;
+use service\model\CNNPayload;
 
 class CaptchaImageDataProvider implements StageInterface
 {
     public function importData(): array
     {
         echo "importing data\n";
-        $parentPath = '../../image/captcha';
+        $parentPath = '../../data/captcha';
         $images = [];
 
         $list = file_get_contents($parentPath . '/' . 'captcha_data.json');
@@ -27,7 +27,7 @@ class CaptchaImageDataProvider implements StageInterface
     }
 
     /**
-     * @param Payload $payload
+     * @param CNNPayload $payload
      */
     public function __invoke($payload)
     {

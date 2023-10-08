@@ -1,4 +1,5 @@
 python-docker-classify/services/web/env
 .idea
-script/prognose-sales/sales.csv
+data/sales/sales.csv
+data/sales/sales_processed.csv
 vendor

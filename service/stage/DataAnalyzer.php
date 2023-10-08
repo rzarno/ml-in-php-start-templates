@@ -5,7 +5,7 @@ namespace service\stage;
 use League\Pipeline\StageInterface;
 use Rindow\Math\Matrix\MatrixOperator;
 use Rindow\Math\Plot\Plot;
-use service\model\Payload;
+use service\model\CNNPayload;
 
 class DataAnalyzer implements StageInterface
 {
@@ -24,12 +24,12 @@ class DataAnalyzer implements StageInterface
     }
 
     /**
-     * @param Payload $payload
-     * @return Payload
+     * @param CNNPayload $payload
+     * @return CNNPayload
      */
     public function __invoke($payload)
     {
-        $this->analyzeData($payload->getDataLabel());
+        $this->analyzeData($payload->getDataY());
         return $payload;
     }
 }

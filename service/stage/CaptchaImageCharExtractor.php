@@ -6,7 +6,7 @@ use Imagick;
 use League\Pipeline\StageInterface;
 use service\CaptchaCharEncoder;
 use service\ImageTransform;
-use service\model\Payload;
+use service\model\CNNPayload;
 
 class CaptchaImageCharExtractor implements StageInterface
 {
@@ -22,13 +22,13 @@ class CaptchaImageCharExtractor implements StageInterface
         $charsImg = [];
         $charsLabel = [];
         foreach ($images as $photo => $chars) {
-            $im1 = new Imagick(__DIR__ . '/../../image/captcha/' . $photo);
+            $im1 = new Imagick(__DIR__ . '/../../data/captcha/' . $photo);
             $im1->trimImage(0);
             $im1->resizeImage(240, $height, Imagick::FILTER_GAUSSIAN, 1);
+            $im1->writeImage('sample.jpg');
             for ($i = 0; $i < 6; $i++) {
-                $im1c = clone $im1;
+                $im1c = new Imagick('sample.jpg');
                 $im1c->cropImage($width, $height, $i * $width, 0);
-                $im1c->resizeImage($width, $height, Imagick::FILTER_GAUSSIAN, 1);
                 $charsImg[] = $this->imageTransform->exportRGBArray($im1c);
                 $charsLabel[] = $this->captchaCharEncoder->encode($chars[$i]);
             }
@@ -37,7 +37,7 @@ class CaptchaImageCharExtractor implements StageInterface
     }
 
     /**
-     * @param Payload $payload
+     * @param CNNPayload $payload
      */
     public function __invoke($payload)
     {
@@ -46,8 +46,8 @@ class CaptchaImageCharExtractor implements StageInterface
             $payload->getConfigImgWidth(),
             $payload->getConfigImgHeight()
         );
-        $payload->setDataImg($charsImg);
-        $payload->setDataLabel($charsLabel);
+        $payload->setDataX($charsImg);
+        $payload->setDataY($charsLabel);
         return $payload;
     }
 }

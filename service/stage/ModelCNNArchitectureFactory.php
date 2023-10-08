@@ -5,7 +5,7 @@ namespace service\stage;
 use League\Pipeline\StageInterface;
 use Rindow\NeuralNetworks\Builder\NeuralNetworks;
 use Rindow\NeuralNetworks\Model\Sequential;
-use service\model\Payload;
+use service\model\CNNPayload;
 
 class ModelCNNArchitectureFactory implements StageInterface
 {
@@ -136,8 +136,8 @@ class ModelCNNArchitectureFactory implements StageInterface
     }
 
     /**
-     * @param Payload $payload
-     * @return Payload
+     * @param CNNPayload $payload
+     * @return CNNPayload
      */
     public function __invoke($payload)
     {

@@ -6,36 +6,28 @@ use Interop\Polite\Math\Matrix\NDArray;
 use Rindow\Math\Matrix\NDArrayPhp;
 use Rindow\NeuralNetworks\Model\Sequential;
 
-class Payload
+class Payload implements PayloadInterface
 {
     private ?array $importedData;
-    private array $dataImg;
-    private array $dataLabel;
-    private array $configInputShape;
-    private ?NDArrayPhp $trainImg;
-    private ?NDArrayPhp $testImg;
-    private ?NDArrayPhp $trainLabel;
-    private ?NDArrayPhp $testLabel;
-    private NDArray $normalizedTrainImg;
-    private NDArray $normalizedTestImg;
-    private NDArray $normalizedTrainLabel;
-    private NDArray $normalizedTestLabel;
+    private array $dataX;
+    private array $dataY;
+    private ?NDArrayPhp $trainX;
+    private ?NDArrayPhp $testX;
+    private ?NDArrayPhp $trainY;
+    private ?NDArrayPhp $testY;
+    private NDArray $normalizedTrainX;
+    private NDArray $normalizedTestX;
+    private NDArray $normalizedTrainY;
+    private NDArray $normalizedTestY;
     private Sequential $model;
 
     public function __construct(
         private readonly string $configModelVersion,
         private readonly int $configNumEpochs,
         private readonly int $configBatchSize,
-        private readonly int $configImgWidth,
-        private readonly int $configImgHeight,
-        private readonly int $configNumImgLayers,
         private readonly string $configModelFilePath,
-        private readonly array $configClassNames,
-        private readonly bool $configUseExistingModel,
-        private readonly int $cropFromTop = 0,
-        private readonly int $imputeIterations = 0
+        private readonly bool $configUseExistingModel
     ) {
-        $this->configInputShape = [$this->configImgWidth, $this->configImgHeight, $this->configNumImgLayers];
     }
 
     public function getImportedData(): ?array
@@ -64,44 +56,9 @@ class Payload
         return $this->configBatchSize;
     }
 
-    public function getConfigImgWidth(): int
-    {
-        return $this->configImgWidth;
-    }
-
-    public function getConfigImgHeight(): int
-    {
-        return $this->configImgHeight;
-    }
-
-    public function getCropFromTop(): int
-    {
-        return $this->cropFromTop;
-    }
-
-    public function getImputeIterations(): int
-    {
-        return $this->imputeIterations;
-    }
-
-    public function getConfigNumImgLayers(): int
-    {
-        return $this->configNumImgLayers;
-    }
-
     public function getConfigModelFilePath(): string
     {
         return $this->configModelFilePath;
-    }
-
-    public function getConfigInputShape(): array
-    {
-        return $this->configInputShape;
-    }
-
-    public function getConfigClassNames(): array
-    {
-        return $this->configClassNames;
     }
 
     public function isConfigUseExistingModel(): bool
@@ -109,113 +66,80 @@ class Payload
         return $this->configUseExistingModel;
     }
 
-    public function getDataImg(): array
+    public function getDataY(): array
     {
-        return $this->dataImg;
+        return $this->dataY;
     }
 
-    public function setDataImg(array $dataImg): self
+    public function setDataY(array $dataY): self
     {
-        $this->dataImg = $dataImg;
+        $this->dataY = $dataY;
         return $this;
     }
 
-    public function getDataLabel(): array
+    public function getTrainY(): NDArrayPhp
     {
-        return $this->dataLabel;
+        return $this->trainY;
     }
 
-    public function setDataLabel(array $dataLabel): self
+    public function setTrainY(?NDArrayPhp $trainY): Payload
     {
-        $this->dataLabel = $dataLabel;
+        $this->trainY = $trainY;
         return $this;
     }
 
-    public function getTrainImg(): NDArrayPhp
+    public function getTestY(): NDArrayPhp
     {
-        return $this->trainImg;
+        return $this->testY;
     }
 
-    public function setTrainImg(?NDArrayPhp $trainImg): Payload
+    public function setTestY(?NDArrayPhp $testY): Payload
     {
-        $this->trainImg = $trainImg;
+        $this->testY = $testY;
         return $this;
     }
 
-    public function getTestImg(): NDArrayPhp
+    public function getNormalizedTrainX(): NDArray
     {
-        return $this->testImg;
+        return $this->normalizedTrainX;
     }
 
-    public function setTestImg(?NDArrayPhp $testImg): Payload
+    public function setNormalizedTrainX(NDArray $normalizedTrainX): Payload
     {
-        $this->testImg = $testImg;
+        $this->normalizedTrainX = $normalizedTrainX;
         return $this;
     }
 
-    public function getTrainLabel(): NDArrayPhp
+    public function getNormalizedTestX(): NDArray
     {
-        return $this->trainLabel;
+        return $this->normalizedTestX;
     }
 
-    public function setTrainLabel(?NDArrayPhp $trainLabel): Payload
+    public function setNormalizedTestX(NDArray $normalizedTestX): Payload
     {
-        $this->trainLabel = $trainLabel;
+        $this->normalizedTestX = $normalizedTestX;
         return $this;
     }
 
-    public function getTestLabel(): NDArrayPhp
+    public function getNormalizedTrainY(): NDArray
     {
-        return $this->testLabel;
+        return $this->normalizedTrainY;
     }
 
-    public function setTestLabel(?NDArrayPhp $testLabel): Payload
+    public function setNormalizedTrainY(NDArray $normalizedTrainY): Payload
     {
-        $this->testLabel = $testLabel;
+        $this->normalizedTrainY = $normalizedTrainY;
         return $this;
     }
 
-    public function getNormalizedTrainImg(): NDArray
+    public function getNormalizedTestY(): NDArray
     {
-        return $this->normalizedTrainImg;
+        return $this->normalizedTestY;
     }
 
-    public function setNormalizedTrainImg(NDArray $normalizedTrainImg): Payload
+    public function setNormalizedTestY(NDArray $normalizedTestY): Payload
     {
-        $this->normalizedTrainImg = $normalizedTrainImg;
-        return $this;
-    }
-
-    public function getNormalizedTestImg(): NDArray
-    {
-        return $this->normalizedTestImg;
-    }
-
-    public function setNormalizedTestImg(NDArray $normalizedTestImg): Payload
-    {
-        $this->normalizedTestImg = $normalizedTestImg;
-        return $this;
-    }
-
-    public function getNormalizedTrainLabel(): NDArray
-    {
-        return $this->normalizedTrainLabel;
-    }
-
-    public function setNormalizedTrainLabel(NDArray $normalizedTrainLabel): Payload
-    {
-        $this->normalizedTrainLabel = $normalizedTrainLabel;
-        return $this;
-    }
-
-    public function getNormalizedTestLabel(): NDArray
-    {
-        return $this->normalizedTestLabel;
-    }
-
-    public function setNormalizedTestLabel(NDArray $normalizedTestLabel): Payload
-    {
-        $this->normalizedTestLabel = $normalizedTestLabel;
+        $this->normalizedTestY = $normalizedTestY;
         return $this;
     }
 
@@ -227,6 +151,39 @@ class Payload
     public function setModel(Sequential $model): Payload
     {
         $this->model = $model;
+        return $this;
+    }
+
+    public function getDataX(): array
+    {
+        return $this->dataX;
+    }
+
+    public function setDataX(array $dataX): self
+    {
+        $this->dataX = $dataX;
+        return $this;
+    }
+
+    public function getTrainX(): NDArrayPhp
+    {
+        return $this->trainX;
+    }
+
+    public function setTrainX(?NDArrayPhp $trainX): Payload
+    {
+        $this->trainX = $trainX;
+        return $this;
+    }
+
+    public function getTestX(): NDArrayPhp
+    {
+        return $this->testX;
+    }
+
+    public function setTestX(?NDArrayPhp $testX): Payload
+    {
+        $this->testX = $testX;
         return $this;
     }
 }

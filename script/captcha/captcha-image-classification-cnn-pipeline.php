@@ -10,16 +10,16 @@ use Rindow\Math\Plot\Renderer\GDDriver;
 use Rindow\NeuralNetworks\Builder\NeuralNetworks;
 use service\CaptchaCharEncoder;
 use service\ImageTransform;
-use service\model\Payload;
+use service\model\CNNPayload;
 use service\stage\CaptchaImageCharExtractor;
 use service\stage\CaptchaImageDataProvider;
 use service\stage\DataAnalyzer;
 use service\stage\ImagePreprocesor;
 use service\stage\ModelCNNArchitectureFactory;
-use service\stage\ModelEvaluator;
+use service\stage\ImageModelEvaluator;
 use service\stage\ModelExport;
-use service\stage\ModelTraining;
-use service\stage\TrainTestSplit;
+use service\stage\CaptchaModelTraining;
+use service\stage\CaptchaTrainTestSplit;
 
 $matrixOperator = new MatrixOperator();
 $plot = new Plot(matrixOperator: $matrixOperator, renderer: new GDDriver(skipRunViewer: true));
@@ -28,15 +28,15 @@ $dataAnalyzer = new DataAnalyzer($plot, $matrixOperator);
 $charImageExtractor = new CaptchaImageCharExtractor(new ImageTransform(), new CaptchaCharEncoder());
 $neuralNetworks = new NeuralNetworks($matrixOperator);
 $cnnModelFactory = new ModelCNNArchitectureFactory($neuralNetworks);
-$modelTrain = new ModelTraining($plot, $matrixOperator, $neuralNetworks);
-$resultsEvaluator = new ModelEvaluator($plot, $matrixOperator);
-$trainTestSplit = new TrainTestSplit();
+$modelTrain = new CaptchaModelTraining($plot, $matrixOperator, $neuralNetworks);
+$resultsEvaluator = new ImageModelEvaluator($plot, $matrixOperator);
+$trainTestSplit = new CaptchaTrainTestSplit();
 $imagePreprocessor = new ImagePreprocesor($matrixOperator);
 $modelExport = new ModelExport();
 
-$payload = new Payload(
+$payload = new CNNPayload(
     $configModelVersion = '1.0',
-    $configEpochs = 20,
+    $configEpochs = 30,
     $configBatchSize = 64,
     $configImgWidth = 40,
     $configImgHeight = 50,
