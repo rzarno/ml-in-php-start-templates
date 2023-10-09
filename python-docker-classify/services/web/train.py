@@ -1,31 +1,22 @@
-# import bibliotek
-from sklearn.model_selection import train_test_split
-from sklearn import  metrics, ensemble
-import pickle
+#import bibliotek
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn import model_selection, preprocessing, linear_model, naive_bayes, metrics, svm
+from sklearn import ensemble
+import pickle
 
-# import danych
-passengers = pd.read_csv('train_and_test2.csv')
-passengers.head()
+trainDF = pd.read_csv('indexing_bots.csv', sep='\t')
 
-# usunięcie zbędnych kolumn
-passengers.drop(['Passengerid', 'zero', 'zero.1', 'zero.2', 'zero.3', 'zero.4', 'zero.5', 'zero.6', 'zero.7',
-                 'zero.8', 'zero.9', 'zero.10', 'zero.11', 'zero.12', 'zero.13', 'zero.14', 'zero.15', 'zero.16',
-                 'zero.17', 'zero.18'], axis=1, inplace = True)
+# podziel dane na zbiór treningowy i testowy
+train_x, valid_x, train_y, valid_y = model_selection.train_test_split(trainDF['user_agent'], trainDF['is_indexing_bot'])
 
-# uzupełnij brakujące wartości
-passengers.fillna(passengers.mean(), inplace=True)
-passengersCopy = passengers.copy()
-
-# utwórz zestaw treningowy
-X = passengers.drop('2urvived', axis=1).to_numpy()
-
-# utwórz etykiety zestawu treningowego
-y = passengers.loc[:, '2urvived'].to_numpy()
-
-# podziel zbiór na dane treningowe i testowe
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=12345)
-
+# zakoduj tekst na wektory numeryczne TF-IDF
+tfidf_vect = TfidfVectorizer(analyzer='word', token_pattern=r'\w{1,}', max_features=5000)
+tfidf_vect.fit(trainDF['user_agent'])
+with open('project/tf_idf_vect.pickle', 'wb') as handle:
+    pickle.dump(tfidf_vect, handle)
+xtrain_tfidf =  tfidf_vect.transform(train_x)
+xvalid_tfidf =  tfidf_vect.transform(valid_x)
 
 # uniwersalna metoda do trenowania i ewaluacji modelu
 def train_model(classifier, feature_vector_train, label, feature_vector_valid):
@@ -36,17 +27,17 @@ def train_model(classifier, feature_vector_train, label, feature_vector_valid):
     predictions = classifier.predict(feature_vector_valid)
 
     # wyznacz metryki oceny modelu
-    scores = list(metrics.precision_recall_fscore_support(predictions, y_test))
+    scores = list(metrics.precision_recall_fscore_support(predictions, valid_y))
     score_vals = [
         scores[0][0],
         scores[1][0],
         scores[2][0]
     ]
-    score_vals.append(metrics.accuracy_score(predictions, y_test))
+    score_vals.append(metrics.accuracy_score(predictions, valid_y))
     return classifier, score_vals
 
 # MODEL - Lasy losowe
-classifier, accuracy = train_model(ensemble.RandomForestClassifier(), X_train, y_train, X_test)
+classifier, accuracy = train_model(ensemble.RandomForestClassifier(), xtrain_tfidf, train_y, xvalid_tfidf)
 print ("RF: ", accuracy)
 
 #export model
