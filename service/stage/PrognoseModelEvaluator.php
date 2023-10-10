@@ -2,33 +2,42 @@
 
 namespace service\stage;
 
-use Interop\Polite\Math\Matrix\NDArray;
 use League\Pipeline\StageInterface;
-use service\model\PrognosePayload;
+use Rubix\ML\Extractors\ColumnPicker;
+use Rubix\ML\Extractors\CSV;
+use function Rubix\ML\array_transpose;
 
 class PrognoseModelEvaluator implements StageInterface
 {
-    public function evaluate(NDArray $predicts, NDArray $labels)
-    {
-        $predictsArr = $predicts->toArray();
-        $labelsArr = $labels->toArray();
-        foreach ($predictsArr as $key => $single) {
-            var_dump($single, $labelsArr[$key]);
-        }
-    }
-
-    /**
-     * @param PrognosePayload $payload
-     * @return PrognosePayload
-     */
     public function __invoke($payload)
     {
-        echo "evaluate model \n";
-        $data = $payload->getTestX()[[200,210]];
-        $labels = $payload->getTestY()[[200,210]];
-        $predicts = $payload->getModel()->predict($data);
+        $predictions = $payload->getEstimator()->predict($payload->getDataset());
+        $extractor = new ColumnPicker(new CSV('../../data/sales/sales_processed.csv', true), ['id']);
+        $ids = array_column(iterator_to_array($extractor), 'Id');
+        array_unshift($ids, 'Id');
+        array_unshift($predictions, 'sales');
+        $extractor = new CSV('predictions.csv');
+        $extractor->export(array_transpose([$ids, $predictions]));
+        $payload->getLogger()->info('Predictions saved to predictions.csv');
 
-        $this->evaluate($predicts, $labels);
+        $dataset = $payload->getDataset();
+        $real = $dataset->labels();
+        array_shift($predictions);
+        array_shift($real);
+        $sum = 0;
+        $sumSquared = 0;
+        foreach ($predictions as $key => $prediction) {
+            if ($key < 450) {
+                continue;
+            }
+            if ($key == 500) {
+                break;
+            }
+            $sum += abs($real[$key] - $prediction);
+            $sumSquared += pow($real[$key] - $prediction, 2);
+        }
+        $payload->getLogger()->info('Mean absolute error (chosen 50 days): ' . $sum / count($predictions));
+        $payload->getLogger()->info('Root mean absolute error (chosen 50 days): ' . sqrt($sumSquared / count($predictions)));
 
         return $payload;
     }
