@@ -8,7 +8,8 @@
         "ext-rindow_openblas": "*",
         "rindow/rindow-neuralnetworks": "^2.0",
         "rindow/rindow-math-plot": "^1.0",
-        "league/pipeline": "^1.0"
+        "league/pipeline": "^1.0",
+        "rubix/ml": "^2.4"
     },
     "autoload": {
         "psr-0": {
