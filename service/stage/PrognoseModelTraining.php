@@ -10,7 +10,6 @@ use Rubix\ML\Regressors\GradientBoost;
 use Rubix\ML\Regressors\RegressionTree;
 use Rubix\ML\Transformers\MissingDataImputer;
 use Rubix\ML\Transformers\NumericStringConverter;
-use service\model\PrognosePayload;
 
 class PrognoseModelTraining implements StageInterface
 {
